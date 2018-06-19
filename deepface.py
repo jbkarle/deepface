@@ -10,6 +10,7 @@ import numpy as np
 import fire
 from sklearn.metrics import roc_curve
 from tqdm import tqdm
+from dlib import rectangle
 import matplotlib.pyplot as plt
 
 from confs.conf import DeepFaceConfs
@@ -78,10 +79,17 @@ class DeepFace:
             logger.debug('run face recognition-')
         return
 
-    def run_recognizer(self, npimg, faces, recognizer=FaceRecognizerResnet.NAME):
+    def run_recognizer(self, npimg, faces, detector=FaceDetectorDlib.NAME, recognizer=FaceRecognizerResnet.NAME):
+        self.set_detector(detector)
         self.set_recognizer(recognizer)
+
+        if npimg is None:
+            return []
         rois = []
         for face in faces:
+            if face.face_landmark is None:
+                det = rectangle(left=face.x, top=face.y, right=face.x+face.w, bottom=face.y+face.h)
+                face.face_landmark = self.detector.detect_landmark(npimg, det)
             # roi = npimg[face.y:face.y+face.h, face.x:face.x+face.w, :]
             roi = get_roi(npimg, face, roi_mode=recognizer)
             if int(os.environ.get('DEBUG_SHOW', 0)) == 1:

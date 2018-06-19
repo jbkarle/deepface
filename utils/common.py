@@ -34,7 +34,7 @@ def get_roi(img, face, roi_mode):
     """
     rpy, node_point = landmark_to_pose(face.face_landmark, img.shape)
     roll = rpy[0]
-    if abs(roll) > math.pi / 2.0:
+    if abs(roll) > math.pi / 3.0:
         roll = 0.0  # TODO ?
 
     height, width = img.shape[:2]
@@ -89,10 +89,11 @@ def get_roi(img, face, roi_mode):
     try:
         pasted[start_y:start_y + crop_h, start_x:start_x + crop_w] = cropped[:crop_h, :crop_w]  # TODO
     except:
-        print(crop_y_ratio, (1.0 - crop_y_ratio), roll, pasted.shape, cropped.shape, 'min', min_x, max_x, min_y, max_y, 'imgsize', image_size, start_x, start_y, crop_w, crop_h)
-        print(center_point)
+        print('deepface unexpected err, get_roi()', crop_y_ratio, (1.0 - crop_y_ratio), roll, pasted.shape, cropped.shape, 'min', min_x, max_x, min_y, max_y, 'imgsize', image_size, start_x, start_y, crop_w, crop_h)
+        # print(center_point)
         # crop_y_ratio set 0.3667256819925064
         # 0.0 (128, 128, 3) (249, 128, 3) min 76 166 101 193 imgsize 128 0 129 128 -1
+        # 0.35, 0.65, -1.3975616243584017, (86, 86, 3), (86, 357, 3), 'min', -298, -234, 361, 432, 'imgsize', 86, 309, 0, -223, 86
         # (121.0, -65.31315823528763)
 
     return pasted
